@@ -40,7 +40,7 @@ client.on("messageCreate", message => {
 
   //Command to create a party queue
   if (message.content === "!lgn create") {
-    //test to create main branch
+    //test to create main branchh
   }
   
 })
