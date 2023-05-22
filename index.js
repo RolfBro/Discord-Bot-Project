@@ -6,7 +6,7 @@ app.listen(3000, () => {
 })
 
 app.get("/", (req, res) => {
-  res.send("Hello world!");
+  res.send("Successful bot start!");
 })
 
 const { Client, GatewayIntentBits, Partials, EmbedBuilder } = require('discord.js')
@@ -22,13 +22,15 @@ const client = new Client({
   partials: [Partials.Channel, Partials.Message, Partials.User, Partials.GuildMember, Partials.Reaction]
 })
 
-//Test for functionality of bot
+const parties = new Map();
+
+// Test for functionality of bot
 client.on("messageCreate", message => {
   if (message.content === "ping") {
     message.channel.send("pong")
   }
 
-  //Test to see format for Party Queue
+  // Test to see format for Party Queue
   if (message.content === "!lgn test") {
     const embed = new EmbedBuilder()  
     .setTitle("Party #1")
@@ -38,11 +40,67 @@ client.on("messageCreate", message => {
     message.channel.send({ embeds: [embed] });
   }
 
-  //Command to create a party queue
-  if (message.content === "!lgn create") {
-    //this is a test of merging this branch to main
+  // Command to create a party queue
+  const args = message.content.split(' ');
+  if (args[0] === "!lgn" && args[1] === "create") {
+    const game = args[2];
+    const partySize = parseInt(args[3]);
+
+    if (isNaN(partySize)) {
+      message.channel.send('Invalid party size');
+      return;
+    }
+
+    // Create the party
+    const party = {
+      creator: message.author.tag,
+      members: [message.author.tag],
+      size: partySize
+    };
+
+    // Store the party using the game as key
+    parties.set(game, party);
+
+    // Create the party description
+    let partyDescription = '';
+    for (let i = 0; i < partySize; i++) {
+      if (i < party.members.length) {
+        partyDescription += `${i+1}. ${party.members[i]}\n`;
+      } else {
+        partyDescription += `${i+1}. \n`;
+      }
+    }
+
+    const embed = new EmbedBuilder()
+      .setTitle(game)
+      .setDescription(partyDescription)
+      .setFooter({text: `Party created by ${message.author.tag}`});
+
+    message.channel.send({ embeds: [embed] });
   }
-  
+
+  // Cancel a party
+  if (args[0] === "!lgn" && args[1] === "cancel") {
+    const game = args[2];
+
+    // Check if a party with the given title exists
+    if (!parties.has(game)) {
+      message.channel.send(`No party titled '${game}' found`);
+      return;
+    }
+
+    const party = parties.get(game);
+
+    // Check if the message author is the creator of the party
+    if (message.author.tag !== party.creator) {
+      message.channel.send('You are not the creator of this party.');
+      return;
+    }
+
+    // Delete the party
+    parties.delete(game);
+    message.channel.send(`Party titled '${game}' has been cancelled`);
+  }
 })
 
 client.login(process.env.token);
