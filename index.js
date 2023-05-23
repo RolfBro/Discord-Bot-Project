@@ -51,6 +51,12 @@ client.on("messageCreate", message => {
       return;
     }
 
+    // Check if a party with the given name already exists
+    if (parties.has(game)) {
+      message.channel.send('A party with this name already exists');
+      return;
+    }
+    
     // Create the party
     const party = {
       creator: message.author.tag,
@@ -147,7 +153,7 @@ client.on("messageCreate", message => {
       message.channel.send({ embeds: [embed] });
     }
 
-    // If the party is now full, notify all members
+    // If the party is now full, notify all members and delete the party
     if (party.members.length === party.size) {
       const memberTags = party.members.map(member => `<@${member.id}>`).join(', ');
       
@@ -160,6 +166,9 @@ client.on("messageCreate", message => {
       // Send the updated party embed
       message.channel.send({ embeds: [embed] });
       message.channel.send(`The party '${game}' is now full. Members: ${memberTags}`);
+
+      // Deletion of party
+      parties.delete(game);
     }
   }
 })
