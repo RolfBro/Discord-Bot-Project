@@ -43,7 +43,7 @@ const createParty = (message, parties) => {
     .setColor('Red')
     .setTitle(game)
     .setDescription(partyDescription)
-    .setFooter({text: `Party created by ${message.author.tag}`, iconURL: message.author.displayAvatarURL()});
+    .setFooter({text: `Party hosted by ${message.author.tag}`, iconURL: message.author.displayAvatarURL()});
 
   message.channel.send({ embeds: [embed] });
 }
