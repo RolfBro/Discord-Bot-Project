@@ -14,7 +14,7 @@ module.exports = (message, parties) => {
 
   // Check if the message author is the creator of the party
   if (message.author.tag !== party.creator) {
-    message.channel.send('You are not the creator of this party.');
+    message.channel.send('You are not the host of this party.');
     return;
   }
 

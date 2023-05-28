@@ -53,7 +53,7 @@ module.exports = (message, parties) => {
     .setColor(0x00FF00) // Green
     .setTitle(game)
     .setDescription(partyDescription)
-    .setFooter({ text: `Party created by ${party.creator}`, iconURL: party.creatorAvatarURL });
+    .setFooter({ text: `Party hosted by ${party.creator}`, iconURL: party.creatorAvatarURL });
 
     // Send the updated party embed
     message.channel.send({ embeds: [embed] });
