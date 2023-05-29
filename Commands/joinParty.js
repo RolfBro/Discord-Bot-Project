@@ -1,18 +1,19 @@
+const Database = require('@replit/database');
+const db = new Database();
 const { EmbedBuilder } = require('discord.js');
 
 // Joining a party
 
-module.exports = (message, parties) => {
+module.exports = async (message) => {
   const args = message.content.split(' ');
   const game = args[2];
 
   // Check if a party with the given title exists
-  if (!parties.has(game)) {
+  const party = await db.get(game);
+  if (!party) {
     message.channel.send(`No party titled '${game}' found.`);
     return;
   }
-  
-  const party = parties.get(game);
   
   // Check if the user is already in the party
   if (party.members.some(member => member.tag === message.author.tag)) {
@@ -23,7 +24,7 @@ module.exports = (message, parties) => {
   // Add the user to the party
   party.members.push({tag: message.author.tag, id: message.author.id});
 
-  //Create the party Description
+  // Create the party Description
   let partyDescription = '';
   for (let i = 0; i < party.size; i++) {
     if(i < party.members.length) {
@@ -32,6 +33,9 @@ module.exports = (message, parties) => {
         partyDescription += `${i+1}.\n`;
     }
   }
+
+  // Update the party in the database
+  await db.set(game, party);
 
   // If the party is not yet full, don't notify members yet
   if (party.members.length < party.size) {
@@ -60,6 +64,6 @@ module.exports = (message, parties) => {
     message.channel.send(`The party '${game}' is now full. Members: ${memberTags}`);
 
     // Deletion of party
-    parties.delete(game);
+    await db.delete(game);
   }
 };

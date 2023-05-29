@@ -1,20 +1,21 @@
+const Database = require('@replit/database');
+const db = new Database();
 const { EmbedBuilder } = require('discord.js');
 
 // Kicking a member of the party
 
-module.exports = (message, parties) => {
+module.exports = async (message) => {
   
   const args = message.content.split(' ');
   const game = args[2];
   let playerKick = (args[3]);
 
   // Check if a party with the given title exists
-  if(!parties.has(game)) {
+  const party = await db.get(game);
+  if(!party) {
     message.channel.send(`No party titled '${game} found.'`);
     return;
   }
-
-  const party = parties.get(game);
 
   // Check if the user is in the party
   let memberIndex;
@@ -22,7 +23,7 @@ module.exports = (message, parties) => {
     memberIndex = party.members.findIndex(member => member.tag === playerKick);
   } else {
     playerKick = parseInt(playerKick, 10) - 1;
-    membersIndex = playerKick >= 0 && playerKick < party.members.length ? playerKick : -1;
+    memberIndex = playerKick >= 0 && playerKick < party.members.length ? playerKick : -1;
   }
   
   if (memberIndex === -1) {
@@ -32,6 +33,9 @@ module.exports = (message, parties) => {
 
   // Remove the user from the party
   party.members.splice(memberIndex, 1);
+
+  // Update the party in the database
+  await db.set(game, party);
 
   // Create the party Description
   let partyDescription = '';
@@ -48,8 +52,7 @@ module.exports = (message, parties) => {
     .setColor('Red')
     .setTitle(game)
     .setDescription(partyDescription)
-    .setFooter({text: `Party hosted by ${message.author.tag}`, iconURL: message.author.displayAvatarURL()});
+    .setFooter({text: `Party hosted by ${party.creator}`, iconURL: party.creatorAvatarURL});
 
   message.channel.send({ embeds: [embed] });
-  
 }
