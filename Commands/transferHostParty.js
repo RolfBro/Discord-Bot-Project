@@ -10,12 +10,18 @@ module.exports = (message, parties, client) => {
 
   // Check if a party with the given title exists
   if(!parties.has(game)) {
-    message.channel.send(`No party titled '${game} found.'`);
+    message.channel.send(`No party titled '${game}' found.`);
     return;
   }
 
   const party = parties.get(game);
   let memberIndex;
+
+  // Check if the user is the host of the party
+  if (party.creator !== message.author.tag) {
+    message.channel.send(`Only the host can transfer ownership.`);
+    return;
+  }
 
   // Check if the new owner is specified by number or by username
   if (isNaN(newOwner)) {
@@ -49,7 +55,7 @@ module.exports = (message, parties, client) => {
     if(i < party.members.length) {
       partyDescription += `${i+1}. ${party.members[i].tag}\n`;
     } else {
-        partyDescription += `${i+1}.\n`;
+      partyDescription += `${i+1}.\n`;
     }
   }
 
@@ -58,7 +64,7 @@ module.exports = (message, parties, client) => {
     .setColor('Red')
     .setTitle(game)
     .setDescription(partyDescription)
-    .setFooter({text: `Party created by ${party.creator}`, iconURL: party.creatorAvatarURL});
+    .setFooter({text: `Party hosted by ${party.creator}`, iconURL: party.creatorAvatarURL});
 
   message.channel.send({ embeds: [embed] });
   

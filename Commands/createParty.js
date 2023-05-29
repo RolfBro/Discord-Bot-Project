@@ -1,6 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
 
-
 // Creation of party
 const createParty = (message, parties) => {
   const args = message.content.split(' ');
@@ -12,9 +11,22 @@ const createParty = (message, parties) => {
     return;
   }
 
+  // Limit the party size to a maximum of 100
+  if (partySize > 100) {
+    message.channel.send('Party size cannot exceed 100');
+    return;
+  }
+
   // Check if a party with the given name already exists
   if (parties.has(game)) {
     message.channel.send('A party with this name already exists');
+    return;
+  }
+
+  // Check if the user has already created a party
+  const userParties = Array.from(parties.values()).filter(party => party.creator === message.author.tag);
+  if (userParties.length > 0) {
+    message.channel.send('You can only create one party');
     return;
   }
 
