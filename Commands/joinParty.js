@@ -16,19 +16,23 @@ module.exports = async (message) => {
   }
   
   // Check if the user is already in the party
-  if (party.members.some(member => member.tag === message.author.tag)) {
+  if (party.membersOrder.some(member => member.tag === message.author.tag)) {
     message.channel.send('You are already in this party.');
     return;
   }
 
   // Add the user to the party
-  party.members.push({tag: message.author.tag, id: message.author.id});
+  const newMember = {tag: message.author.tag, id: message.author.id};
+  party.membersOrder.push(newMember);
+  if (party.members.length < party.size) {
+    party.members.push(newMember);
+  }
 
   // Create the party Description
   let partyDescription = '';
   for (let i = 0; i < party.size; i++) {
-    if(i < party.members.length) {
-      partyDescription += `${i+1}. ${party.members[i].tag}\n`;
+    if(i < party.membersOrder.length) {
+      partyDescription += `${i+1}. ${party.membersOrder[i].tag}\n`;
     } else {
         partyDescription += `${i+1}.\n`;
     }

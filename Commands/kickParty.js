@@ -5,15 +5,20 @@ const { EmbedBuilder } = require('discord.js');
 // Kicking a member of the party
 
 module.exports = async (message) => {
-  
   const args = message.content.split(' ');
   const game = args[2];
-  let playerKick = (args[3]);
+  let playerKick = args[3];
 
   // Check if a party with the given title exists
   const party = await db.get(game);
   if(!party) {
-    message.channel.send(`No party titled '${game} found.'`);
+    message.channel.send(`No party titled '${game}' found.`);
+    return;
+  }
+
+  // Check if the user is the host of the party
+  if (message.author.tag !== party.creator) {
+    message.channel.send(`Only the host can kick members from the party.`);
     return;
   }
 
@@ -23,16 +28,18 @@ module.exports = async (message) => {
     memberIndex = party.members.findIndex(member => member.tag === playerKick);
   } else {
     playerKick = parseInt(playerKick, 10) - 1;
-    memberIndex = playerKick >= 0 && playerKick < party.members.length ? playerKick : -1;
+    memberIndex = playerKick >= 0 && playerKick < party.membersOrder.length ? playerKick : -1;
   }
   
   if (memberIndex === -1) {
-    message.channel.send(`${playerKick} is not in this party.`);
+    message.channel.send(`${args[3]} is not in this party.`);
     return;
   }
 
   // Remove the user from the party
-  party.members.splice(memberIndex, 1);
+  const kickedMember = party.membersOrder[memberIndex];
+  party.membersOrder.splice(memberIndex, 1);
+  party.members = party.members.filter(member => member.tag !== kickedMember.tag);
 
   // Update the party in the database
   await db.set(game, party);
@@ -40,10 +47,10 @@ module.exports = async (message) => {
   // Create the party Description
   let partyDescription = '';
   for (let i = 0; i < party.size; i++) {
-    if(i < party.members.length) {
-      partyDescription += `${i+1}. ${party.members[i].tag}\n`;
+    if(i < party.membersOrder.length) {
+      partyDescription += `${i+1}. ${party.membersOrder[i].tag}\n`;
     } else {
-        partyDescription += `${i+1}.\n`;
+      partyDescription += `${i+1}.\n`;
     }
   }
 

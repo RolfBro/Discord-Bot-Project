@@ -3,7 +3,8 @@ const Database = require('@replit/database');
 const db = new Database();
 
 // Transferring ownership of the party
-module.exports = async (message, client) => {
+module.exports = async (message, parties, client) => {
+  console.log(client);
   const args = message.content.split(' ');
   const game = args[2];
   let newOwner = args[3];

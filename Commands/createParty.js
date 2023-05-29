@@ -45,6 +45,7 @@ const createParty = async (message) => {
     creator: message.author.tag,
     creatorAvatarURL: message.author.displayAvatarURL(),
     members: [{tag: message.author.tag, id: message.author.id}],
+    membersOrder: [{tag: message.author.tag, id: message.author.id}],
     size: partySize
   };
 
@@ -54,8 +55,8 @@ const createParty = async (message) => {
   // Create the party description
   let partyDescription = '';
   for (let i = 0; i < party.size; i++) {
-    if(i < party.members.length) {
-      partyDescription += `${i+1}. ${party.members[i].tag}\n`;
+    if(i < party.membersOrder.length) {
+      partyDescription += `${i+1}. ${party.membersOrder[i].tag}\n`;
     } else {
         partyDescription += `${i+1}.\n`;
     }

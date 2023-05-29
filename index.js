@@ -20,7 +20,8 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.GuildMessageReactions,
-    GatewayIntentBits.MessageContent
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers
   ],
   partials: [Partials.Channel, Partials.Message, Partials.User, Partials.GuildMember, Partials.Reaction]
 })
@@ -122,7 +123,7 @@ client.on("messageCreate", message => {
 
   // Mention members in the party
   if (args[0] === "!l" && args[1] === "mention") {
-    mentionParty(message, parties);
+    mentionParty(message, parties, client);
   }
 
   // List all parties in the server
