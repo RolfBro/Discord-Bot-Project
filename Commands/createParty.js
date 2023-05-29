@@ -1,7 +1,9 @@
 const { EmbedBuilder } = require('discord.js');
+const Database = require('@replit/database');
+const db = new Database();
 
 // Creation of party
-const createParty = (message, parties) => {
+const createParty = async (message) => {
   const args = message.content.split(' ');
   const game = args[2];
   const partySize = parseInt(args[3]);
@@ -18,13 +20,21 @@ const createParty = (message, parties) => {
   }
 
   // Check if a party with the given name already exists
-  if (parties.has(game)) {
+  const existingParty = await db.get(game);
+  if (existingParty) {
     message.channel.send('A party with this name already exists');
     return;
   }
 
   // Check if the user has already created a party
-  const userParties = Array.from(parties.values()).filter(party => party.creator === message.author.tag);
+  const keys = await db.list();
+  const userParties = [];
+  for (const key of keys) {
+    const party = await db.get(key);
+    if (party.creator === message.author.tag) {
+      userParties.push(party);
+    }
+  }
   if (userParties.length > 0) {
     message.channel.send('You can only create one party');
     return;
@@ -39,7 +49,7 @@ const createParty = (message, parties) => {
   };
 
   // Store the party using the game as key
-  parties.set(game, party);
+  await db.set(game, party);
 
   // Create the party description
   let partyDescription = '';

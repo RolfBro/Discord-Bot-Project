@@ -1,19 +1,21 @@
 const { EmbedBuilder } = require('discord.js');
+const Database = require('@replit/database');
+const db = new Database();
 
 // Resizing the party
-module.exports = (message, parties) => {
-
+module.exports = async (message) => {
   const args = message.content.split(' ');
   const game = args[2];
   let newSize = parseInt(args[3], 10); // get the new size from the command arguments
 
+  // Fetch the party from the database
+  const party = await db.get(game);
+
   // Check if a party with the given title exists
-  if(!parties.has(game)) {
-    message.channel.send(`No party titled '${game} found.'`);
+  if (!party) {
+    message.channel.send(`No party titled '${game}' found.`);
     return;
   }
-
-  const party = parties.get(game);
 
   // Check if the new size is a valid number
   if (isNaN(newSize) || newSize < 1) {
@@ -67,7 +69,6 @@ module.exports = (message, parties) => {
     message.channel.send(`The party '${game}' is now full. Members: ${memberTags}`);
 
     // Deletion of party
-    parties.delete(game);
+    await db.delete(game);
   }
-  
 }

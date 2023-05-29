@@ -1,5 +1,7 @@
 const express = require("express");
 const app = express();
+const Database = require('@replit/database');
+const db = new Database();
 
 app.listen(3000, () => {
   console.log("Project is running!");
@@ -11,24 +13,6 @@ app.get("/", (req, res) => {
 
 const { Client, GatewayIntentBits, Partials, EmbedBuilder } = require('discord.js')
 
-function clearParties() {
-  parties.clear();
-  console.log('All parties have been cleared.');
-  
-  // Schedule the next clearing
-  scheduleClearing();
-}
-
-function scheduleClearing() {
-  // Get the current time
-  const now = new Date();
-  
-  // Calculate how many milliseconds are left until the next 12 AM
-  const untilMidnight = (24 - now.getHours()) * 60 * 60 * 1000;
-  
-  // Schedule the clearing
-  setTimeout(clearParties, untilMidnight);
-}
 
 const client = new Client({
   intents: [
@@ -40,6 +24,52 @@ const client = new Client({
   ],
   partials: [Partials.Channel, Partials.Message, Partials.User, Partials.GuildMember, Partials.Reaction]
 })
+
+// RESET OF PARTIES EVERY 7 DAYS TO CLEAR SPACE
+
+function scheduleCleanup() {
+  const now = new Date();
+  let nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  let delay = nextMidnight - now; // time until next midnight
+
+  // If it's already past midnight, calculate time until midnight after 7 days
+  if (delay < 0) {
+    nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 8);
+    delay = nextMidnight - now;
+  }
+
+  setTimeout(() => {
+    // Delete all parties at midnight
+    deleteAllParties();
+
+    // Then continue to delete all parties every 7 days
+    setInterval(deleteAllParties, 1000 * 60 * 60 * 24 * 7); // 7 days in milliseconds
+  }, delay);
+}
+
+async function deleteAllParties() {
+  // Fetch all keys (party names) from the database
+  const keys = await db.list();
+
+  // Delete each party
+  for (const key of keys) {
+    await db.delete(key);
+  }
+
+  // Notify channels about the deletion
+  notifyChannels();
+}
+
+async function notifyChannels() {
+  // Fetch all channels from the database
+  const channelIDs = await db.get('channelIDs');
+
+  // For each channel ID, send a message
+  for (const id of channelIDs) {
+    const channel = await client.channels.fetch(id);
+    channel.send('All parties are cleared.');
+  }
+}
 
 const parties = new Map();
 const createParty = require('./Commands/createParty.js');
@@ -102,7 +132,6 @@ client.on("messageCreate", message => {
   
 })
 
-// Clear parties every day at 12 AM
-scheduleClearing();
+scheduleCleanup();
 
 client.login(process.env.token);

@@ -1,20 +1,22 @@
 const { EmbedBuilder } = require('discord.js');
+const Database = require('@replit/database');
+const db = new Database();
 
 // Transferring ownership of the party
-
-module.exports = (message, parties, client) => {
-
+module.exports = async (message, client) => {
   const args = message.content.split(' ');
   const game = args[2];
   let newOwner = args[3];
 
+  // Fetch the party from the database
+  const party = await db.get(game);
+
   // Check if a party with the given title exists
-  if(!parties.has(game)) {
+  if (!party) {
     message.channel.send(`No party titled '${game}' found.`);
     return;
   }
 
-  const party = parties.get(game);
   let memberIndex;
 
   // Check if the user is the host of the party
@@ -41,7 +43,6 @@ module.exports = (message, parties, client) => {
   // Transfer ownership
   const oldOwner = party.members[0];
   party.members[0] = party.members[memberIndex];
-  party.members[0] = party.members[memberIndex];
   party.members[memberIndex] = oldOwner;
 
   const newOwnerUser = client.users.cache.get(party.members[0].id);
@@ -67,5 +68,7 @@ module.exports = (message, parties, client) => {
     .setFooter({text: `Party hosted by ${party.creator}`, iconURL: party.creatorAvatarURL});
 
   message.channel.send({ embeds: [embed] });
-  
+
+  // Update the party in the database
+  await db.set(game, party);
 }
