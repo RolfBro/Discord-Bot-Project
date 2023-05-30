@@ -2,14 +2,18 @@ const { EmbedBuilder } = require('discord.js');
 
 // Listing all active parties
 
-module.exports = (message, parties) => {
+module.exports = async (message, db) => {
+  // Fetch all keys from the database
+  const games = await db.list();
 
-  if(parties.size === 0) {
+  if (games.length === 0) {
     message.channel.send('No active parties.');
     return;
   }
 
-  parties.forEach((party, game) => {
+  for (const game of games) {
+    const party = await db.get(game);
+
     // Calculate the remaining slots
     const remainingSlots = party.size - party.members.length;
 
@@ -24,6 +28,5 @@ module.exports = (message, parties) => {
     
     // Send the embed
     message.channel.send({ embeds: [embed] });
-  });
-  
+  }
 }
