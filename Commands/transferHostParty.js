@@ -45,9 +45,14 @@ module.exports = async (message, parties, client) => {
   }
 
   // Transfer ownership
-  const oldOwner = party.members[0];
-  party.members[0] = party.members[memberIndex];
-  party.members[memberIndex] = oldOwner;
+const oldOwner = party.members[0];
+party.members[0] = party.members[memberIndex];
+party.members[memberIndex] = oldOwner;
+
+// Also swap the members in the order array
+const oldOwnerOrder = party.membersOrder[0];
+party.membersOrder[0] = party.membersOrder[memberIndex];
+party.membersOrder[memberIndex] = oldOwnerOrder;
 
   const newOwnerUser = client.users.cache.get(party.members[0].id);
 
