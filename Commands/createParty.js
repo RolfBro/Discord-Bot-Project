@@ -7,6 +7,7 @@ const createParty = async (message) => {
   const args = message.content.split(' ');
   const game = args[2];
   const partySize = parseInt(args[3]);
+  const guildId = message.guild.id; // get the server id
 
   if (isNaN(partySize)) {
     message.channel.send('Invalid party size');
@@ -20,7 +21,8 @@ const createParty = async (message) => {
   }
 
   // Check if a party with the given name already exists
-  const existingParty = await db.get(game);
+  const partyKey = `${guildId}-${game}`; // use server id as prefix to game
+  const existingParty = await db.get(partyKey);
   if (existingParty) {
     message.channel.send('A party with this name already exists');
     return;
@@ -50,7 +52,7 @@ const createParty = async (message) => {
   };
 
   // Store the party using the game as key
-  await db.set(game, party);
+  await db.set(partyKey, party);
 
   // Create the party description
   let partyDescription = '';

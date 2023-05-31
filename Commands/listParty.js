@@ -3,16 +3,22 @@ const { EmbedBuilder } = require('discord.js');
 // Listing all active parties
 
 module.exports = async (message, db) => {
+  const guildId = message.guild.id; // get the server id
+
   // Fetch all keys from the database
-  const games = await db.list();
+  const keys = await db.list();
+
+  // Filter keys for the current server
+  const games = keys.filter(key => key.startsWith(`${guildId}-`));
 
   if (games.length === 0) {
     message.channel.send('No active parties.');
     return;
   }
 
-  for (const game of games) {
-    const party = await db.get(game);
+  for (const gameKey of games) {
+    const party = await db.get(gameKey);
+    const game = gameKey.replace(`${guildId}-`, ''); // remove server id prefix to get the game name
 
     // Calculate the remaining slots
     const remainingSlots = party.size - party.members.length;

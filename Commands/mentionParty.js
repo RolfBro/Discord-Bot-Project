@@ -1,17 +1,23 @@
+const Database = require('@replit/database');
+const db = new Database();
+
 // Mentioning all members of the party
 
-module.exports = (message, parties) => {
+module.exports = async (message) => {
+  const guildId = message.guild.id; // get the server id
 
   const args = message.content.split(' ');
   const game = args[2];
 
+  // Prefix the game name with the server id
+  const gameKey = `${guildId}-${game}`;
+
   // Check if a party with the given title exists
-  if(!parties.has(game)) {
-    message.channel.send(`No party titled '${game} found.'`);
+  const party = await db.get(gameKey);
+  if(!party) {
+    message.channel.send(`No party titled '${game}' found.`);
     return;
   }
-
-  const party = parties.get(game);
 
   // Check if the user sending the message is the host
   if (message.author.id !== party.members[0].id) {
@@ -27,5 +33,4 @@ module.exports = (message, parties) => {
 
   // Send a message with the mentions
   message.channel.send(mentionList);
-  
 }
