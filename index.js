@@ -93,42 +93,42 @@ client.on("messageCreate", message => {
 
   // Creating a party
   if (args[0] === "!l" && args[1] === "create") {
-  createParty(message, parties);
+  createParty(message, db);
   }  
 
   // Cancel a party
   if (args[0] === "!l" && args[1] === "cancel") {
-    cancelParty(message, parties);
+    cancelParty(message, db);
   }
 
   // Join a party
   if (args[0] === "!l" && args[1] === "join") {
-    joinParty(message, parties);
+    joinParty(message, db);
   }
 
   // Kick a member in the party
   if (args[0] === "!l" && args[1] === "kick") {
-    kickParty(message, parties);
+    kickParty(message, db);
   }
 
   // Transfer Host in the party
   if (args[0] === "!l" && args[1] === "transfer") {
-    transferHostParty(message, parties, client);
+    transferHostParty(message, db, client);
   }
 
   // Resize slots in the party
   if (args[0] === "!l" && args[1] === "resize") {
-    resizeParty(message, parties);
+    resizeParty(message, db);
   }
 
   // Mention members in the party
   if (args[0] === "!l" && args[1] === "mention") {
-    mentionParty(message, parties, client);
+    mentionParty(message, db, client);
   }
 
   // List all parties in the server
   if (args[0] === "!l" && args[1] === "list") {
-    listParty(message, parties);
+    listParty(message, db);
   }
   
 })

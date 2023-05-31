@@ -4,9 +4,14 @@ const db = new Database();
 
 // Resizing the party
 const resizeParty = async (message) => {
+  const guildId = message.guild.id; // get the server id
+
   const args = message.content.split(' ');
   const game = args[2];
   const newSize = parseInt(args[3]);
+
+  // Prefix the game name with the server id
+  const gameKey = `${guildId}-${game}`;
 
   if (isNaN(newSize)) {
     message.channel.send('Invalid party size');
@@ -20,7 +25,7 @@ const resizeParty = async (message) => {
   }
 
   // Fetch the party from the database
-  const party = await db.get(game);
+  const party = await db.get(gameKey);
 
   // Check if a party with the given name already exists
   if (!party) {
@@ -53,13 +58,13 @@ const resizeParty = async (message) => {
     // Change the color to green
     color = 0x32CD32;
     // Delete the party from the database
-    await db.delete(game);
+    await db.delete(gameKey);
     // Mention the members
     const membersMention = party.members.map(member => `<@${member.id}>`).join(', ');
     message.channel.send(`Party is complete! ${membersMention}`);
   } else {
     // Update the party in the database
-    await db.set(game, party);
+    await db.set(gameKey, party);
   }
 
   // Create an embed with the updated party information

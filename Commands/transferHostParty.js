@@ -9,8 +9,11 @@ module.exports = async (message, parties, client) => {
   const game = args[2];
   let newOwner = args[3];
 
+  const guildId = message.guild.id; // get the server id
+  const gameKey = `${guildId}-${game}`; // prefix the game name with the server id
+
   // Fetch the party from the database
-  const party = await db.get(game);
+  const party = await db.get(gameKey);
 
   // Check if a party with the given title exists
   if (!party) {
@@ -71,5 +74,5 @@ module.exports = async (message, parties, client) => {
   message.channel.send({ embeds: [embed] });
 
   // Update the party in the database
-  await db.set(game, party);
+  await db.set(gameKey, party);
 }

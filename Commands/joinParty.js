@@ -7,9 +7,11 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = async (message) => {
   const args = message.content.split(' ');
   const game = args[2];
+  const guildId = message.guild.id; // get the server id
 
   // Check if a party with the given title exists
-  const party = await db.get(game);
+  const partyKey = `${guildId}-${game}`; // use server id as prefix to game
+  const party = await db.get(partyKey);
   if (!party) {
     message.channel.send(`No party titled '${game}' found.`);
     return;
@@ -39,7 +41,7 @@ module.exports = async (message) => {
   }
 
   // Update the party in the database
-  await db.set(game, party);
+  await db.set(partyKey, party);
 
   // If the party is not yet full, don't notify members yet
   if (party.members.length < party.size) {
@@ -68,6 +70,6 @@ module.exports = async (message) => {
     message.channel.send(`The party '${game}' is now full. Members: ${memberTags}`);
 
     // Deletion of party
-    await db.delete(game);
+    await db.delete(partyKey);
   }
 };

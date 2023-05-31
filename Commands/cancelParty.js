@@ -4,11 +4,13 @@ const db = new Database();
 module.exports = async (message) => {
   const args = message.content.split(' ');
   const game = args[2];
+  const guildId = message.guild.id; // get the server id
 
   //Cancellation of Party
   
   // Check if a party with the given title exists
-  const party = await db.get(game);
+  const partyKey = `${guildId}-${game}`; // use server id as prefix to game
+  const party = await db.get(partyKey);
   if (!party) {
     message.channel.send(`No party titled '${game}' found`);
     return;
@@ -21,6 +23,6 @@ module.exports = async (message) => {
   }
 
   // Delete the party
-  await db.delete(game);
+  await db.delete(partyKey);
   message.channel.send(`Party titled '${game}' has been cancelled`);
 };
