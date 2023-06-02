@@ -1,15 +1,27 @@
 # Legiondary Bot
-## (A Discord Party Creator bot)
+## This is a Discord Party Creator bot launched as a mini project in order to be familiarized with the **Javascript** language. 
 
-Version 1.0
+### The centerpiece of the project is a Discord bot that enables server users to create and manage parties. The bot's functionality is designed to foster community engagement and provide a convenient way to organize social activities within the server. 
 
-A mini project launched in order to be familiarized with the **Javascript** language.
+### This bot offers users the ability to create parties with custom titles and capacity specifications. Once a party is created, it becomes open for other users to join. Once a party reaches its specified capacity, the bot sends a notification to all the members, alerting them that the party is ready to commence.
 
-The centerpiece of the project is a Discord bot that enables server users to create and manage parties. The bot's functionality is designed to foster community engagement 
-and provide a convenient way to organize social activities within the server.
+**Versions:**
 
-This bot offers users the ability to create parties with custom titles and capacity specifications. Once a party is created, it becomes open for other users to join.
-Once a party reaches its specified capacity, the bot sends a notification to all the members, alerting them that the party is ready to commence.
+++ Version 2.0 (Public Release) ++
+
+This version brings more commands to the bot including:
+
+* **Kick a member of the party**: Party hosts can now kick a member of the party.
+* **Transfer host role**: The host role can be given to another member.
+* **Resize the party**: The host now has the ability to adjust the size of the party after it has been created.
+* **Mention all members**: The host can now notify all members at once, making communication within the party more efficient.
+* **List all active parties**: Members can now view all active parties, allowing them to easily choose which one they want to join.
+
+Mutliple bug fixes were also done to ensure the smooth operation of the bot.
+
+The bot can now store its data in a Replit database instead of Map().
+
+++ Version 1.0 ++
 
 The bot currently supports the following commands:
 
