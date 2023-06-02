@@ -65,7 +65,7 @@ const createParty = async (message) => {
   }
 
   const embed = new EmbedBuilder()
-    .setColor('Red')
+    .setColor(0xFF0000)
     .setTitle(game)
     .setDescription(partyDescription)
     .setFooter({text: `Party hosted by ${message.author.tag}`, iconURL: message.author.displayAvatarURL()});

@@ -71,7 +71,7 @@ party.membersOrder[memberIndex] = oldOwnerOrder;
 
   // Create an embed with the updated party information
   const embed = new EmbedBuilder()
-    .setColor('Red')
+    .setColor(0xFF0000)
     .setTitle(game)
     .setDescription(partyDescription)
     .setFooter({text: `Party hosted by ${party.creator}`, iconURL: party.creatorAvatarURL});

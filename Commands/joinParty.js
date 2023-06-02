@@ -60,7 +60,7 @@ module.exports = async (message) => {
     const memberTags = party.members.map(member => `<@${member.id}>`).join(', ');
     
     const embed = new EmbedBuilder()
-    .setColor(0x00FF00) // Green
+    .setColor(0x32CD32) // Green
     .setTitle(game)
     .setDescription(partyDescription)
     .setFooter({ text: `Party hosted by ${party.creator}`, iconURL: party.creatorAvatarURL });
