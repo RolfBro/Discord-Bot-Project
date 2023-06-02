@@ -20,6 +20,12 @@ const createParty = async (message) => {
     return;
   }
 
+  // Prevent creation of a party of size 1
+  if (partySize <= 1) {
+    message.channel.send('Party size must be greater than 1');
+    return;
+  }
+
   // Check if a party with the given name already exists
   const partyKey = `${guildId}-${game}`; // use server id as prefix to game
   const existingParty = await db.get(partyKey);
