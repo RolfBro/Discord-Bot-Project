@@ -3,7 +3,6 @@ const db = new Database();
 const { EmbedBuilder } = require('discord.js');
 
 // Kicking a member of the party
-
 module.exports = async (message) => {
   const args = message.content.split(' ');
   const game = args[2];
@@ -26,14 +25,26 @@ module.exports = async (message) => {
 
   // Check if the user is in the party
   let memberIndex;
+  let memberTag;
   if (isNaN(playerKick)) {
+    memberTag = playerKick;
+    if (memberTag === party.creator) {
+      message.channel.send(`The host cannot kick themselves.`);
+      return;
+    }
     memberIndex = party.members.findIndex(member => member.tag === playerKick);
   } else {
-    playerKick = parseInt(playerKick, 10) - 1;
+    playerKick = parseInt(playerKick, 10);
+    if (playerKick === 1) {
+      message.channel.send(`The host cannot kick themselves.`);
+      return;
+    }
+    playerKick -= 1;
     memberIndex = playerKick >= 0 && playerKick < party.membersOrder.length ? playerKick : -1;
+    memberTag = party.membersOrder[memberIndex] ? party.membersOrder[memberIndex].tag : null;
   }
-  
-  if (memberIndex === -1) {
+
+  if (memberIndex === -1 || memberTag === null) {
     message.channel.send(`${args[3]} is not in this party.`);
     return;
   }

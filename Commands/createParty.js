@@ -38,7 +38,7 @@ const createParty = async (message) => {
     }
   }
   if (userParties.length > 0) {
-    message.channel.send('You can only create one party');
+    message.channel.send('You are only permitted to create one party at a time. Please consider cancelling your existing party on this/other server before creating a new one.');
     return;
   }
 

@@ -18,12 +18,6 @@ const resizeParty = async (message) => {
     return;
   }
 
-  // Limit the party size to a maximum of 100
-  if (newSize > 100) {
-    message.channel.send('Party size cannot exceed 100');
-    return;
-  }
-
   // Fetch the party from the database
   const party = await db.get(gameKey);
 
@@ -36,6 +30,18 @@ const resizeParty = async (message) => {
   // Check if the user is the host of the party
   if (party.creator !== message.author.tag) {
     message.channel.send('Only the host can resize the party.');
+    return;
+  }
+
+  // Check if the new size is less than the current number of members
+  if (newSize < party.members.length) {
+    message.channel.send('Cannot resize the party to less than the current number of members.');
+    return;
+  }
+
+  // Limit the party size to a maximum of 100
+  if (newSize > 100) {
+    message.channel.send('Party size cannot exceed 100');
     return;
   }
 
